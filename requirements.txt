@@ -1,3 +1,10 @@
-selenium
-webdriver-manager
-pprintpp
+# requirements.txt - minimal runtime dependencies for the project
+# Note: built-in stdlib modules (csv, os, time, datetime, pprint) are NOT listed.
+
+selenium>=4.10.0
+webdriver-manager>=4.0.0
+beautifulsoup4  # if using BeautifulSoup in your scraping helpers
+lxml            # optional, faster HTML parsing backend for BeautifulSoup
+requests        # optional helper if you ever fetch static pages outside selenium
+
+# If you use any other libraries inside your local modules, add them here.

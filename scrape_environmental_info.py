@@ -1,11 +1,13 @@
 from bs4 import BeautifulSoup
 
-def scrape_environmental_table(html: str) -> dict:
-    """Parse a table row and extract environmental info fields based on td[data-value]."""
+def scrape_environmental_table(html: str, full_html: str = "") -> dict:
+    """Parse environmental table and also extract 'series' and 'datasheet_link'."""
     soup = BeautifulSoup(html, "html.parser")
+    full_soup = BeautifulSoup(full_html, "html.parser") if full_html else None
+
     result = {}
 
-    # Loop over each <td> and check its data-value attribute
+    # Environmental info from <td data-value>
     for td in soup.find_all("td"):
         data_value = td.get("data-value", "").strip()
 
@@ -39,6 +41,20 @@ def scrape_environmental_table(html: str) -> dict:
 
         elif data_value == "Halogen Free":
             result["halogen_free"] = td.get_text(strip=True)
+
+    # ✅ Extract additional info from the full HTML page
+    if full_soup:
+        # --- Series ---
+        series_span = full_soup.find("span", class_="series-short-desc")
+        if series_span:
+            text = series_span.get_text(strip=True)
+            if "Series:" in text:
+                result["series"] = text.split("Series:")[-1].strip()
+
+        # --- Datasheet Link ---
+        datasheet_link = full_soup.find("a", class_="side-link datasheet-link")
+        if datasheet_link and datasheet_link.get("href"):
+            result["datasheet_link"] = datasheet_link["href"]
 
     return result
 
